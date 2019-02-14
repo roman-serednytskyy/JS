@@ -4,6 +4,7 @@ const taskList = document.querySelector('.collection');
 const clearBtn = document.querySelector('.clear-tasks');
 const filter = document.querySelector('#filter');
 const taskInput = document.querySelector('#task');
+const taskItem = document.getElementsByClassName('collection-item');
 
 // Load all event listeners
 loadEventListeners();
@@ -83,6 +84,8 @@ function addTask(e) {
   // Clear input
   taskInput.value = '';
 
+  clearBtn.classList.remove('disabled');
+  
   e.preventDefault();
 }
 
@@ -108,12 +111,16 @@ function removeTask(e) {
 
       // Remove from LS
       removeTaskFromLocalStorage(e.target.parentElement.parentElement);
+
+      if(taskItem.length == 0) {
+        clearBtn.classList.add('disabled');
+      }
     }
   }
 }
 
 // Remove from LS
-function removeTaskFromLocalStorage(taskItem) {
+function removeTaskFromLocalStorage(taskItemLocal) {
   let tasks;
   if(localStorage.getItem('tasks') === null){
     tasks = [];
@@ -122,13 +129,21 @@ function removeTaskFromLocalStorage(taskItem) {
   }
 
   tasks.forEach(function(task, index){
-    if(taskItem.textContent === task){
+    if(taskItemLocal.textContent === task){
       tasks.splice(index, 1);
     }
   });
 
   localStorage.setItem('tasks', JSON.stringify(tasks));
 }
+
+// Activate Clear Tasks Btn
+  window.onload = function() {
+    
+    if(taskItem.length > 0) {
+      clearBtn.classList.remove('disabled');
+    }
+ };
 
 // Clear Tasks
 function clearTasks() {
@@ -138,6 +153,8 @@ function clearTasks() {
   while(taskList.firstChild) {
     taskList.removeChild(taskList.firstChild);
   }
+
+  clearBtn.classList.add('disabled');
 
   // https://jsperf.com/innerhtml-vs-removechild
 
